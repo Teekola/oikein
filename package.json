@@ -9,7 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "encoding": "^0.1.13",
     "next": "13.3.0",
+    "pusher": "^5.1.2",
+    "pusher-js": "^8.0.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "zod": "^3.21.4"
