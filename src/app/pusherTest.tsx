@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { pusherClient } from "src/lib/pusher/pusherClient";
 
-const PusherTest = () => {
+function PusherTest() {
    useEffect(() => {
       pusherClient.subscribe("test__123__test-event");
 
@@ -19,6 +19,6 @@ const PusherTest = () => {
       };
    }, []);
    return <div>PusherTest</div>;
-};
+}
 
 export default PusherTest;
