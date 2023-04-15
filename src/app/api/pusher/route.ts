@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { pusherServer } from "src/lib/pusher/pusherServer";
 
-export async function GET() {
+export async function POST(req: Request) {
+   console.log(await req.json());
+
    const channel = "test-channel";
    const event = "test-event";
    const data = {
@@ -11,15 +13,10 @@ export async function GET() {
       channel,
       event,
    });
-   const res = await pusherServer.trigger(channel, event, data, {
-      info: "subscription_count.user_count",
-   });
+   const res = await pusherServer.trigger(channel, event, data);
 
    if (res.status === 200) {
-      const body = await res.json();
-      const channelInfo = body.channels;
-      console.log(channelInfo);
+      return NextResponse.json({ status: "completed" });
    }
-
-   return NextResponse.json({ status: "completed" });
+   return NextResponse.json({ status: "failed" });
 }

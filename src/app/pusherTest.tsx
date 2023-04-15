@@ -4,7 +4,11 @@ import { useEffect } from "react";
 import { pusherClient } from "src/lib/pusher/pusherClient";
 
 async function triggerMessage() {
-   const routeRes = await fetch("/api/pusher");
+   const routeRes = await fetch("/api/pusher", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({}),
+   });
    const resJson = await routeRes.json();
    console.log(resJson);
 }
