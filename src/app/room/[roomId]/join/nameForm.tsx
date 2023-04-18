@@ -1,29 +1,51 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import Pusher from "pusher-js";
-import { env } from "src/env/client.mjs";
 import { useState } from "react";
-import { useUpdatePusherClient } from "src/lib/pusher/pusherStore";
+import { useUpdateUsername, useUser } from "../../store";
+import type { User } from "src/types";
+
+async function joinRoom(roomId: string, user: User) {
+   if (!user) return;
+   console.log("JOINING");
+   await fetch("/api/room/join", {
+      method: "POST",
+      headers: {
+         "content-type": "application/json",
+      },
+      body: JSON.stringify({
+         roomId,
+         user,
+      }),
+   });
+}
 
 function NameForm() {
    const { roomId } = useParams();
    const router = useRouter();
-   const [name, setName] = useState("");
-   const updatePusherClient = useUpdatePusherClient();
+   const user = useUser();
+   const [name, setName] = useState<string>(user.name);
+   const updateUserName = useUpdateUsername();
+   const [error, setError] = useState<string>("");
 
    async function handleClick() {
-      const newPusherClient = new Pusher(env.NEXT_PUBLIC_PUSHER_APP_KEY, {
-         cluster: "eu",
-         channelAuthorization: {
-            endpoint: "/pusher/auth",
-            transport: "ajax",
-            params: {
-               name,
-            },
-         },
-      });
-      updatePusherClient(newPusherClient);
+      const usersRes = await (
+         await fetch("/api/room/users", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ roomId }),
+         })
+      ).json();
+
+      const allUsers = usersRes.users as User[];
+
+      if (allUsers.find((u) => u.name === name && u.id !== user.id)) {
+         setError("Nimi on jo käytössä.");
+         return;
+      }
+      updateUserName(name);
+      await joinRoom(roomId, { name, id: user.id, joinDate: new Date() });
+      setError("");
       router.push(`/room/${roomId}`);
    }
    return (
@@ -44,6 +66,7 @@ function NameForm() {
          >
             Liity
          </button>
+         {error && <p className="text-red-500">{error}</p>}
       </>
    );
 }
