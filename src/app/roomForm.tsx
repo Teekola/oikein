@@ -18,7 +18,7 @@ function RoomForm() {
          />
 
          <Link
-            href={`/room/${roomId}`}
+            href={`/room/${roomId}/join`}
             className="flex w-full justify-center rounded-lg bg-indigo-500 px-5 py-4 text-xl font-bold text-slate-50 outline-none hover:bg-indigo-950 focus-visible:bg-indigo-950 dark:hover:bg-indigo-50 dark:hover:text-indigo-900 dark:focus-visible:bg-indigo-50 dark:focus-visible:text-indigo-900"
          >
             Liity

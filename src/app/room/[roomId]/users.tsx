@@ -1,42 +1,62 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { pusherClient } from "src/lib/pusher/pusherClient";
+import type { PusherMembers, Member, UserInfo, PresenceChannel } from "pusher-js";
+import { usePusherClient } from "src/lib/pusher/pusherStore";
+
+function sortMembers(members: UserInfo[]) {
+   members.sort((a, b) => (a.joinDate > b.joinDate ? 1 : 0));
+}
 
 function Users() {
-   const [members, setMembers] = useState<any>();
+   const [members, setMembers] = useState<UserInfo[]>([]);
    const { roomId } = useParams();
+   const router = useRouter();
+
+   const pusherClient = usePusherClient();
 
    useEffect(() => {
-      const presenceChannel = pusherClient.subscribe(`presence-room_${roomId}`);
+      if (!pusherClient) {
+         router.push(`/room/${roomId}/join`);
+         return;
+      }
+      const presenceChannel = pusherClient.subscribe(`presence-room${roomId}`) as PresenceChannel;
 
-      function memberAdded(members: any) {
-         console.log(members);
-
-         setMembers(members);
+      function subscribed(members: PusherMembers) {
+         console.log("subscribed", members);
+         const membersList = Object.values(members.members);
+         sortMembers(membersList);
+         setMembers(membersList);
       }
 
-      function memberRemoved(members: any) {
-         setMembers(members);
+      function memberAdded(member: Member) {
+         console.log("added", member);
+         setMembers((prevMembers) => [...prevMembers, member.info]);
       }
 
-      presenceChannel.bind("pusher:subscription_succeeded", memberAdded);
+      function memberRemoved(member: Member) {
+         console.log("removed", member);
+         const membersList = Object.values(presenceChannel.members.members) as UserInfo[];
+         sortMembers(membersList);
+         setMembers(membersList);
+      }
 
-      presenceChannel.bind("pusher:memberAdded", memberAdded);
-      presenceChannel.bind("pusher:memberRemoved", memberRemoved);
+      presenceChannel.bind("pusher:subscription_succeeded", subscribed);
+      presenceChannel.bind("pusher:member_added", memberAdded);
+      presenceChannel.bind("pusher:member_removed", memberRemoved);
 
       return () => {
-         pusherClient.unsubscribe(`presence-room_${roomId}`);
-         presenceChannel.unbind("pusher:memberAdded", memberAdded);
-         presenceChannel.unbind("pusher:memberRemoved", memberRemoved);
-         presenceChannel.unbind("pusher:subscription_succeeded", memberAdded);
+         pusherClient.unsubscribe(`presence-room${roomId}`);
+         presenceChannel.unbind("pusher:member_added", memberAdded);
+         presenceChannel.unbind("pusher:member_removed", memberRemoved);
+         presenceChannel.unbind("pusher:subscription_succeeded", subscribed);
       };
-   }, [roomId]);
+   }, [roomId, pusherClient, router]);
    return (
       <div>
-         {members?.each((member: any) => (
-            <div key={member.name}>{member.name}</div>
+         {members.map((member) => (
+            <p key={member.id}>{member.name}</p>
          ))}
       </div>
    );

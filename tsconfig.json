@@ -26,6 +26,7 @@
    },
    "include": [
       "next-env.d.ts",
+      "**/lib/pusher/pusher.d.ts",
       "**/*.ts",
       "**/*.tsx",
       "**/*.cjs",
