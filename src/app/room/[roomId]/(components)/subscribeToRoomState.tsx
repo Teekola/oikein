@@ -12,7 +12,7 @@ const SubscribeToRoomState = ({ roomId }: { roomId: string }) => {
 
    useEffect(() => {
       const channelName = `room-${roomId}-state`;
-      pusherClient.subscribe(channelName);
+      const stateChannel = pusherClient.subscribe(channelName);
 
       function handleRoomTerminate() {
          updateUsers([]);
@@ -20,11 +20,11 @@ const SubscribeToRoomState = ({ roomId }: { roomId: string }) => {
          router.push("/");
       }
 
-      pusherClient.bind("room-terminate", handleRoomTerminate);
+      stateChannel.bind("room-terminate", handleRoomTerminate);
 
       return () => {
          pusherClient.unsubscribe(channelName);
-         pusherClient.unbind("room-terminate", handleRoomTerminate);
+         stateChannel.unbind("room-terminate", handleRoomTerminate);
       };
    }, [roomId, router, updateUsers, updateMyJoinDate]);
    return null;

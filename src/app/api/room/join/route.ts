@@ -23,11 +23,12 @@ export async function POST(req: Request) {
    const redisRoomId = `room-${roomId}`;
 
    // Get all the users if the set exists and empty string array if it does not exist
-   const allUsersStr = await redis.smembers(redisRoomId);
+   const roomExists = await redis.exists(redisRoomId);
+   const allUsersStr = roomExists ? await redis.smembers(redisRoomId) : ([] as string[]);
 
    // Trigger room add to all-rooms channel when joining triggers
    // room creation
-   if (allUsersStr.length === 0) {
+   if (!roomExists) {
       pusherServer.trigger("all-rooms", "room-add", redisRoomId);
    }
    const oldUsers = allUsersStr.map((user) => JSON.parse(user)) as User[];

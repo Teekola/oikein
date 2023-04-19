@@ -11,7 +11,7 @@ const SubscribeToRoomUsers = ({ roomId }: { roomId: string }) => {
 
    useEffect(() => {
       const channelName = `room-${roomId}-users`;
-      pusherClient.subscribe(channelName);
+      const usersChannel = pusherClient.subscribe(channelName);
 
       async function fetchAndUpdateUsers() {
          const usersRes = await (
@@ -35,13 +35,13 @@ const SubscribeToRoomUsers = ({ roomId }: { roomId: string }) => {
       }
 
       fetchAndUpdateUsers();
-      pusherClient.bind("join-room", updateStateWhenRoomIsJoined);
-      pusherClient.bind("leave-room", updateStateWhenRoomIsLeft);
+      usersChannel.bind("join-room", updateStateWhenRoomIsJoined);
+      usersChannel.bind("leave-room", updateStateWhenRoomIsLeft);
 
       return () => {
          pusherClient.unsubscribe(channelName);
-         pusherClient.unbind("join-room", updateStateWhenRoomIsJoined);
-         pusherClient.unbind("leave-room", updateStateWhenRoomIsLeft);
+         usersChannel.unbind("join-room", updateStateWhenRoomIsJoined);
+         usersChannel.unbind("leave-room", updateStateWhenRoomIsLeft);
       };
    }, [roomId, me, updateUsers]);
    return null;
