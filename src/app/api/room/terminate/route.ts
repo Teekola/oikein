@@ -19,8 +19,24 @@ export async function POST(req: Request) {
    await redis.del(redisRoomId);
 
    // Trigger terminate event
-   pusherServer.trigger(`room-${roomId}-state`, "room-terminate", "");
-   pusherServer.trigger("all-rooms", "room-terminate", redisRoomId);
+   const pusherRes = await pusherServer.triggerBatch([
+      {
+         channel: `room-${roomId}-state`,
+         name: "room-terminate",
+         data: "",
+      },
+      {
+         channel: "all-rooms",
+         name: "room-terminate",
+         data: redisRoomId,
+      },
+   ]);
+
+   if (pusherRes.status !== 200) {
+      const pusherResJson = await pusherRes.json();
+      console.error(pusherResJson);
+      return NextResponse.json({ success: false }, { status: pusherRes.status });
+   }
 
    return NextResponse.json({ success: true }, { status: 200 });
 }
