@@ -15,6 +15,7 @@ const SubscribeToRoomState = ({ roomId }: { roomId: string }) => {
       const stateChannel = pusherClient.subscribe(channelName);
 
       function handleRoomTerminate() {
+         console.log("The room was terminated!");
          updateUsers([]);
          updateMyJoinDate("");
          router.push("/");

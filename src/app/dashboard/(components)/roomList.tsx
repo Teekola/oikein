@@ -17,21 +17,22 @@ const RoomList = () => {
       }
       getAndSetAllRooms();
 
-      function handleTerminate(redisRoomId: string) {
+      function handleRoomWasTerminated(redisRoomId: string) {
+         console.log(`${redisRoomId} was terminated.`);
          setRooms((prev) => prev.filter((room) => room !== redisRoomId));
       }
 
-      function handleAdd(redisRoomId: string) {
+      function handleRoomWasAdded(redisRoomId: string) {
          setRooms((prev) => prev.concat([redisRoomId]));
       }
 
-      allRoomsChannel.bind("room-terminate", handleTerminate);
-      allRoomsChannel.bind("room-add", handleAdd);
+      allRoomsChannel.bind("room-terminate", handleRoomWasTerminated);
+      allRoomsChannel.bind("room-add", handleRoomWasAdded);
 
       return () => {
          pusherClient.unsubscribe(channel);
-         allRoomsChannel.unbind("room-terminate", handleTerminate);
-         allRoomsChannel.unbind("room-add", handleAdd);
+         allRoomsChannel.unbind("room-terminate", handleRoomWasTerminated);
+         allRoomsChannel.unbind("room-add", handleRoomWasAdded);
       };
    }, []);
 
