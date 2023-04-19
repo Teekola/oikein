@@ -1,6 +1,6 @@
 import RoomList from "./(components)/roomList";
 
-export default function RoomPage({
+export default function DashboardPage({
    params,
 }: {
    params: { roomId: string };
