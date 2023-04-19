@@ -12,8 +12,8 @@ const RoomList = () => {
 
       async function getAndSetAllRooms() {
          const roomsRes = await (await fetch("/api/room/all")).json();
-         const rooms = roomsRes.rooms;
-         setRooms(rooms);
+         const newRooms = roomsRes.rooms;
+         setRooms(newRooms);
       }
       getAndSetAllRooms();
 
