@@ -53,7 +53,7 @@ const RoomList = () => {
             >
                <p>{room}</p>
                <div
-                  onClick={() => handleTerminate(room)}
+                  onClick={async () => await handleTerminate(room)}
                   className="cursor-pointer rounded-full p-2 hover:bg-slate-200"
                >
                   <XMarkIcon className="h-5 w-5" />
