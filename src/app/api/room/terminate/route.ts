@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import * as z from "zod";
 import { redis } from "src/lib/redis/redis";
-import type { User } from "src/types";
+import { pusherServer } from "src/lib/pusher/pusherServer";
 
 const bodySchema = z.object({
    roomId: z.string().min(1),
@@ -15,9 +15,12 @@ export async function POST(req: Request) {
 
    const redisRoomId = `room-${roomId}`;
 
-   // Get all the users if the set exists and empty string array if it does not exist
-   const allUsersStr = await redis.smembers(redisRoomId);
-   const allUsers = allUsersStr.map((user) => JSON.parse(user)) as User[];
+   // Remove the users set from redis
+   await redis.del(redisRoomId);
 
-   return NextResponse.json({ success: true, users: allUsers }, { status: 200 });
+   // Trigger terminate event
+   pusherServer.trigger(`room-${roomId}-state`, "room-terminate", "");
+   pusherServer.trigger("all-rooms", "room-terminate", redisRoomId);
+
+   return NextResponse.json({ success: true }, { status: 200 });
 }

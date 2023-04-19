@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from "react";
-import SubscribeToRoom from "./subscribeToRoom";
+import SubscribeToRoomUsers from "./(components)/subscribeToRoomUsers";
+import SubscribeToRoomState from "./(components)/subscribeToRoomState";
 
 export default function RoomLayout({
    params,
@@ -10,10 +11,10 @@ export default function RoomLayout({
 }>) {
    const { roomId } = params;
    return (
-      <div>
-         <h1>Huone {roomId}</h1>
-         {children}
-         <SubscribeToRoom roomId={roomId} />
-      </div>
+      <>
+         <SubscribeToRoomUsers roomId={roomId} />
+         <SubscribeToRoomState roomId={roomId} />
+         <div className="flex min-h-screen bg-slate-100">{children}</div>
+      </>
    );
 }

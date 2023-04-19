@@ -7,6 +7,8 @@ const bodySchema = z.object({
    roomId: z.string().min(1),
    user: z.object({
       name: z.string().min(1),
+      id: z.string().min(1),
+      joinDate: z.string().datetime(),
    }),
 });
 
@@ -18,14 +20,15 @@ export async function POST(req: Request) {
    if (!parsedBody.success) return NextResponse.json({ success: false }, { status: 400 });
    const { roomId, user } = parsedBody.data;
 
-   const channel = `room-${roomId}`;
+   const redisRoomId = `room-${roomId}`;
+   const channel = `room-${roomId}-users`;
 
    // Remove from redis for temporary persistence
    // users are stored as a set of stringified jsons
-   await redis.srem(roomId, [JSON.stringify(user)]);
+   await redis.srem(redisRoomId, [JSON.stringify(user)]);
 
    // Get all the users if the set exists and empty string array if it does not exist
-   const allUsersStr = await redis.smembers(roomId);
+   const allUsersStr = await redis.smembers(redisRoomId);
    const allUsers = allUsersStr.map((user) => JSON.parse(user)) as User[];
 
    // Update all clients
