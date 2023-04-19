@@ -8,6 +8,7 @@ import { z } from "zod";
 export const serverSchema = z.object({
   PUSHER_APP_ID: z.string().min(1),
   PUSHER_APP_SECRET: z.string().min(1),
+  REDIS_DATABASE_URL: z.string().min(1),
   NODE_ENV: z.enum(["development", "preview", "production"]),
 });
 

@@ -1,29 +1,56 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import Pusher from "pusher-js";
-import { env } from "src/env/client.mjs";
 import { useState } from "react";
-import { useUpdatePusherClient } from "src/lib/pusher/pusherStore";
+import { useMe, useUpdateMe } from "../../roomStore";
+import type { User } from "src/types";
+
+async function joinRoom(roomId: string, me: User) {
+   if (!me) return;
+   console.log("JOINING");
+   await fetch("/api/room/join", {
+      method: "POST",
+      headers: {
+         "content-type": "application/json",
+      },
+      body: JSON.stringify({
+         roomId,
+         user: me,
+      }),
+   });
+}
 
 function NameForm() {
    const { roomId } = useParams();
    const router = useRouter();
-   const [name, setName] = useState("");
-   const updatePusherClient = useUpdatePusherClient();
+   const me = useMe();
+   const [name, setName] = useState<string>(me.name);
+   const updateMe = useUpdateMe();
+   const [error, setError] = useState<string>("");
 
    async function handleClick() {
-      const newPusherClient = new Pusher(env.NEXT_PUBLIC_PUSHER_APP_KEY, {
-         cluster: "eu",
-         channelAuthorization: {
-            endpoint: "/pusher/auth",
-            transport: "ajax",
-            params: {
-               name,
-            },
-         },
-      });
-      updatePusherClient(newPusherClient);
+      const usersRes = await (
+         await fetch("/api/room/users", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ roomId }),
+         })
+      ).json();
+
+      const allUsers = usersRes.users as User[];
+
+      if (allUsers.find((u) => u.name === name && u.id !== me.id)) {
+         setError("Nimi on jo käytössä.");
+         return;
+      }
+      const newMe = {
+         name,
+         id: me.id,
+         joinDate: me.joinDate !== "" ? me.joinDate : new Date().toISOString(),
+      };
+      updateMe(newMe);
+      await joinRoom(roomId, newMe);
+      setError("");
       router.push(`/room/${roomId}`);
    }
    return (
@@ -31,7 +58,7 @@ function NameForm() {
          <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-md px-2 py-2 text-xl outline outline-2 outline-slate-400 focus:outline-4 focus:outline-indigo-500 dark:bg-slate-600 dark:text-slate-200 dark:outline-slate-500 dark:placeholder:text-slate-400 dark:focus:outline-indigo-400"
+            className="w-full rounded-md px-2 py-2 text-center text-xl outline outline-2 outline-slate-400 placeholder:text-center focus:outline-4 focus:outline-indigo-500 dark:bg-slate-600 dark:text-slate-200 dark:outline-slate-500 dark:placeholder:text-slate-400 dark:focus:outline-indigo-400"
             type="text"
             name="roomId"
             id="roomId"
@@ -44,6 +71,7 @@ function NameForm() {
          >
             Liity
          </button>
+         {error && <p className="text-red-500">{error}</p>}
       </>
    );
 }
