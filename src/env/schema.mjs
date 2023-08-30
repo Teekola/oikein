@@ -6,10 +6,18 @@ import { z } from "zod";
  * This way you can ensure the app isn't built with invalid env vars.
  */
 export const serverSchema = z.object({
-  PUSHER_APP_ID: z.string().min(1),
-  PUSHER_APP_SECRET: z.string().min(1),
-  REDIS_DATABASE_URL: z.string().min(1),
-  NODE_ENV: z.enum(["development", "preview", "production"]),
+   PUSHER_APP_ID: z.string().min(1),
+   PUSHER_APP_SECRET: z.string().min(1),
+   REDIS_DATABASE_URL: z.string().min(1),
+   GOOGLE_CLIENT_ID: z.string(),
+   GOOGLE_CLIENT_SECRET: z.string(),
+   POSTGRES_URL: z.string(),
+   POSTGRES_URL_NON_POOLING: z.string(),
+   POSTGRES_USER: z.string(),
+   POSTGRES_HOST: z.string(),
+   POSTGRES_PASSWORD: z.string(),
+   POSTGRES_DATABASE: z.string(),
+   NODE_ENV: z.enum(["development", "preview", "production"]),
 });
 
 /**
@@ -18,7 +26,7 @@ export const serverSchema = z.object({
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 export const clientSchema = z.object({
-  NEXT_PUBLIC_PUSHER_APP_KEY: z.string().min(1),
+   NEXT_PUBLIC_PUSHER_APP_KEY: z.string().min(1),
 });
 
 /**
@@ -28,5 +36,5 @@ export const clientSchema = z.object({
  * @type {{ [k in keyof z.infer<typeof clientSchema>]: z.infer<typeof clientSchema>[k] | undefined }}
  */
 export const clientEnv = {
-  NEXT_PUBLIC_PUSHER_APP_KEY: process.env.NEXT_PUBLIC_PUSHER_APP_KEY
+   NEXT_PUBLIC_PUSHER_APP_KEY: process.env.NEXT_PUBLIC_PUSHER_APP_KEY,
 };
