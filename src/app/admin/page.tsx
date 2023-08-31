@@ -15,12 +15,12 @@ export default async function AdminPage() {
       <div className="bg-slate-100">
          <div className="mx-auto flex max-w-screen-xl items-center justify-end gap-2 py-2">
             <SignOutButton />
-            <div className="border-white-300 relative h-16 w-16 overflow-hidden rounded-full border-2 shadow-sm">
+            <div className="border-white-300 relative h-12 w-12 overflow-hidden rounded-full border-2 shadow-sm">
                <Image
                   src={session.user.image}
                   alt="Käyttäjän kuva"
                   fill
-                  sizes="64px"
+                  sizes="48px"
                   className="object-cover"
                />
             </div>
