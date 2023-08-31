@@ -1,8 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from "next/server";
 
-import iconSrc from "./icon.png";
-
 // Image metadata
 export const size = {
    width: 180,
@@ -15,7 +13,21 @@ export default async function AppleIcon() {
    return new ImageResponse(
       (
          // ImageResponse JSX element
-         <>{iconSrc && <img src={iconSrc.src} alt="apple-touch-icon" {...size} />}</>
+         <div
+            style={{
+               fontSize: 32,
+               background: "#7aff14",
+               width: "100%",
+               height: "100%",
+               display: "flex",
+               alignItems: "center",
+               justifyContent: "center",
+               color: "black",
+               borderRadius: "100%",
+            }}
+         >
+            O
+         </div>
       ),
       // ImageResponse options
       {
