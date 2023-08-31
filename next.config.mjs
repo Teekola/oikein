@@ -7,14 +7,22 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
-  experimental: {
-    appDir: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true
-  }
-}
+   reactStrictMode: true,
+   swcMinify: true,
+   images: {
+      remotePatterns: [
+         {
+            protocol: "https",
+            hostname: "**",
+         },
+      ],
+   },
+   experimental: {
+      appDir: true,
+   },
+   eslint: {
+      ignoreDuringBuilds: true,
+   },
+};
 
 export default nextConfig;
