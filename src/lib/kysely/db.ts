@@ -3,7 +3,7 @@ import { type GeneratedAlways, PostgresDialect } from "kysely";
 import { Pool } from "pg";
 import { env } from "src/env/server.mjs";
 
-interface Database {
+export interface Database {
    User: {
       id: GeneratedAlways<string>;
       name: string | null;

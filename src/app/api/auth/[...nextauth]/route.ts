@@ -6,7 +6,8 @@ import { env } from "src/env/server.mjs";
 import { db } from "src/lib/kysely/db";
 
 const handler = NextAuth({
-   adapter: KyselyAdapter(db),
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   adapter: KyselyAdapter(db as any) as any,
    session: {
       strategy: "database",
       // Seconds - How long until an idle session expires and is no longer valid.
