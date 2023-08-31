@@ -45,6 +45,7 @@ export const db = new KyselyAuth<Database>({
          database: env.POSTGRES_DATABASE,
          user: env.POSTGRES_USER,
          password: env.POSTGRES_PASSWORD,
+         ssl: { rejectUnauthorized: false },
       }),
    }),
 });
