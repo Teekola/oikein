@@ -1,30 +1,33 @@
+import { loadEnvConfig } from "@next/env";
 import { promises as fs } from "fs";
 import { FileMigrationProvider, Kysely, Migrator, PostgresDialect } from "kysely";
 import * as path from "path";
 import { Pool } from "pg";
 
-import { type Database, db } from "./db";
+import { type Database } from "./db";
+
+loadEnvConfig(process.cwd());
 
 async function migrateToLatest() {
-   const { env } = await import("../../env/server.mjs");
-   const migrator = new Migrator({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      db: new Kysely<Database>({
-         dialect: new PostgresDialect({
-            pool: new Pool({
-               host: env.POSTGRES_HOST,
-               database: env.POSTGRES_DATABASE,
-               user: env.POSTGRES_USER,
-               password: env.POSTGRES_PASSWORD,
-               ssl: { rejectUnauthorized: false },
-            }),
+   const db = new Kysely<Database>({
+      dialect: new PostgresDialect({
+         pool: new Pool({
+            host: process.env.POSTGRES_HOST,
+            database: process.env.POSTGRES_DATABASE,
+            user: process.env.POSTGRES_USER,
+            password: process.env.POSTGRES_PASSWORD,
+            ssl: { rejectUnauthorized: false },
          }),
       }),
+   });
+   const migrator = new Migrator({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      db,
       provider: new FileMigrationProvider({
          fs,
          path,
          // This needs to be an absolute path.
-         migrationFolder: path.join(__dirname, "src/lib/kysely/migrations"),
+         migrationFolder: path.join(__dirname, "/migrations"),
       }),
    });
 
