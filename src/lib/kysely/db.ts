@@ -1,5 +1,5 @@
 import { KyselyAuth } from "@auth/kysely-adapter";
-import { CamelCasePlugin, type GeneratedAlways, PostgresDialect } from "kysely";
+import { type GeneratedAlways, PostgresDialect } from "kysely";
 import { Pool } from "pg";
 import { env } from "src/env/server.mjs";
 
@@ -48,5 +48,4 @@ export const db = new KyselyAuth<Database>({
          ssl: { rejectUnauthorized: false },
       }),
    }),
-   plugins: [new CamelCasePlugin()],
 });

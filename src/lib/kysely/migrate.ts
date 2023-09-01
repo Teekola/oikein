@@ -1,12 +1,6 @@
 import { loadEnvConfig } from "@next/env";
 import { promises as fs } from "fs";
-import {
-   CamelCasePlugin,
-   FileMigrationProvider,
-   Kysely,
-   Migrator,
-   PostgresDialect,
-} from "kysely";
+import { FileMigrationProvider, Kysely, Migrator, PostgresDialect } from "kysely";
 import * as path from "path";
 import { Pool } from "pg";
 
@@ -25,7 +19,6 @@ async function migrateToLatest() {
             ssl: { rejectUnauthorized: false },
          }),
       }),
-      plugins: [new CamelCasePlugin()],
    });
    const migrator = new Migrator({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
