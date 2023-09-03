@@ -30,3 +30,49 @@ Hallinnointi:
       -  kysymyksen numero
       -  tulostila
       -  lopputulostila
+
+## Database schema
+
+### User
+
+| Column Name   | Data Type   | Constraints                             |
+| ------------- | ----------- | --------------------------------------- |
+| id            | uuid        | Primary Key, Default: gen_random_uuid() |
+| name          | text        |                                         |
+| email         | text        | Unique, Not Null                        |
+| emailVerified | timestamptz |                                         |
+| image         | text        |                                         |
+
+### Account
+
+| Column Name       | Data Type | Constraints                                       |
+| ----------------- | --------- | ------------------------------------------------- |
+| id                | uuid      | Primary Key, Default: gen_random_uuid()           |
+| userId            | uuid      | References User(id), On Delete: Cascade, Not Null |
+| type              | text      | Not Null                                          |
+| provider          | text      | Not Null                                          |
+| providerAccountId | text      | Not Null                                          |
+| refresh_token     | text      |                                                   |
+| access_token      | text      |                                                   |
+| expires_at        | bigint    |                                                   |
+| token_type        | text      |                                                   |
+| scope             | text      |                                                   |
+| id_token          | text      |                                                   |
+| session_state     | text      |                                                   |
+
+## Session
+
+| Column Name  | Data Type   | Constraints                                       |
+| ------------ | ----------- | ------------------------------------------------- |
+| id           | uuid        | Primary Key, Default: gen_random_uuid()           |
+| userId       | uuid        | References User(id), On Delete: Cascade, Not Null |
+| sessionToken | text        | Unique, Not Null                                  |
+| expires      | timestamptz | Not Null                                          |
+
+## VerificationToken
+
+| Column Name | Data Type   | Constraints      |
+| ----------- | ----------- | ---------------- |
+| identifier  | text        | Not Null         |
+| token       | text        | Unique, Not Null |
+| expires     | timestamptz | Not Null         |
