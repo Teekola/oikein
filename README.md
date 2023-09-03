@@ -76,3 +76,34 @@ Hallinnointi:
 | identifier  | text        | Not Null         |
 | token       | text        | Unique, Not Null |
 | expires     | timestamptz | Not Null         |
+
+> **Note!** All of the above tables are required for NextAuth to work.
+
+### Quiz
+
+| Column Name | Data Type   | Constraints                                       |
+| ----------- | ----------- | ------------------------------------------------- |
+| id          | uuid        | Primary Key, Default: gen_random_uuid()           |
+| userId      | uuid        | References User(id), On Delete: Cascade, Not Null |
+| name        | text        | Not Null                                          |
+| description | text        |                                                   |
+| createdAt   | timestamptz | Not Null                                          |
+
+### QuizQuestion
+
+| Column Name | Data Type | Constraints                                       |
+| ----------- | --------- | ------------------------------------------------- |
+| id          | uuid      | Primary Key, Default: gen_random_uuid()           |
+| quizId      | uuid      | References Quiz(id), On Delete: Cascade, Not Null |
+| text        | text      | Not Null                                          |
+| number      | int2      | Not Null, Unique (per quiz)                       |
+
+### QuestionOption
+
+| Column Name | Data Type | Constraints                                           |
+| ----------- | --------- | ----------------------------------------------------- |
+| id          | uuid      | Primary Key, Default: gen_random_uuid()               |
+| questionId  | uuid      | References Question(id), On Delete: Cascade, Not Null |
+| text        | text      | Not Null                                              |
+| isCorrect   | boolean   | Not Null                                              |
+| number      | int2      | Not Null, Unique (per question)                       |
