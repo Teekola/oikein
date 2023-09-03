@@ -26,10 +26,6 @@ export async function up(db: Kysely<unknown>): Promise<void> {
       .addColumn("text", "text", (col) => col.notNull())
       .addColumn("number", "int2")
       .addUniqueConstraint("quizId_questionNumber_unique", ["quizId", "number"])
-      .addCheckConstraint(
-         "questionNumber_inBounds_check",
-         sql`"number" <= (SELECT COUNT(*) FROM QuizQuestion q2 WHERE q2."quizId" = QuizQuestion."quizId")`
-      )
       .execute();
 
    await db.schema
@@ -44,10 +40,6 @@ export async function up(db: Kysely<unknown>): Promise<void> {
       .addColumn("isCorrect", "boolean", (col) => col.notNull())
       .addColumn("number", "int2")
       .addUniqueConstraint("questionId_optionNumber_unique", ["questionId", "number"])
-      .addCheckConstraint(
-         "optionNumber_inBounds_check",
-         sql`"number" <= (SELECT COUNT(*) FROM QuestionOption q2 WHERE q2."questionId" = QuestionOption."questionId")`
-      )
       .execute();
 
    await db.schema.createIndex("Quiz_userId_index").on("Quiz").column("userId").execute();
