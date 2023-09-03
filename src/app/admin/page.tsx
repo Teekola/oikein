@@ -3,13 +3,19 @@ import { getServerSession } from "next-auth/next";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { authOptions } from "src/app/api/auth/[...nextauth]/route";
+import { convertSearchParamsToURLSearchParams } from "src/lib/utils";
 
-export default async function AdminPage() {
+export default async function AdminPage({
+   searchParams,
+}: {
+   searchParams: { [key: string]: string | string[] | undefined };
+}) {
    const session = await getServerSession(authOptions);
 
    console.log(session);
 
-   if (!session) redirect("/api/auth/signin");
+   const queryString = convertSearchParamsToURLSearchParams(searchParams).toString();
+   if (!session) redirect("/api/auth/signin?" + queryString);
 
    return (
       <div className="bg-slate-100">
